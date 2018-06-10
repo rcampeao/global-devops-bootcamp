@@ -1,8 +1,8 @@
 # Parameters
+sourceimage=$1
 resourcegroup=devops-bootcamp
-location=${1:-'eastus2'}
+location=${2:-'eastus2'}
 accountname=$(echo gdvpblob$(od -vAn -N4 -tu4 < /dev/urandom) | sed 's/ //g')
-sourceimage='https://md-g2lj3jhvdx1x.blob.core.windows.net/qqk5lvrzxvtg/abcd?sv=2017-04-17&sr=b&si=2f27476d-f404-4b91-a8bb-4d4ad701e2b3&sig=b8GdInjLjPClPVyImvxWl0kyHV16gEuJLmFaklGdTz8%3D'
 vmname=bootcampvm
 
 set -e # on error exit
