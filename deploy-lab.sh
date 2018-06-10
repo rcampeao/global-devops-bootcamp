@@ -48,6 +48,11 @@ az vm user update \
     >/dev/null
 echo Finished updating Username and Password.
 
+echo Getting your VM public IP...
+vmip=$(az vm list-ip-addresses -n $vmname -g $resourcegroup --query [0].virtualMachine.network.publicIpAddresses[0].ipAddress -o tsv)
+echo Access your VM using:
+echo ssh $vmuser@$vmip
+
 echo Finished!
 
 exit 0
