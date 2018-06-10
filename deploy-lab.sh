@@ -28,7 +28,14 @@ echo VHD disk copied.
 
 # Lab VM
 echo Creating your VM...
-az vm create -n $vmname -g $resourcegroup --attach-os-disk $destination --os-type linux --use-unmanaged-disk >/dev/null
+az vm create    -n $vmname \
+                -g $resourcegroup \
+                --attach-os-disk $destination \
+                --os-type linux \
+                --use-unmanaged-disk \
+                --admin-username azureuser \
+                --admin-password P@ssw0rd0123 \
+                >/dev/null
 echo VM created.
 
 echo Finished!
