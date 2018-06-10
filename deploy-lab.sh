@@ -36,17 +36,16 @@ az vm create    -n $vmname \
                 --attach-os-disk $destination \
                 --os-type linux \
                 --use-unmanaged-disk \
-                --admin-username $vmuser \
-                --admin-password $vmpassword \
                 >/dev/null
 echo VM created.
 
 echo Updating Username and Password...
-az vm user update
+az vm user update \
     -n $vmname \
     -g $resourcegroup \
     -u $vmuser \
-    -p $vmpassword
+    -p $vmpassword \
+    >/dev/null
 echo Finished updating Username and Password.
 
 echo Finished!
