@@ -36,8 +36,8 @@ az vm create    -n $vmname \
                 --attach-os-disk $destination \
                 --os-type linux \
                 --use-unmanaged-disk \
-                --admin-username azureuser \
-                --admin-password P@ssw0rd0123 \
+                --admin-username $vmuser \
+                --admin-password $vmpassword \
                 >/dev/null
 echo VM created.
 
