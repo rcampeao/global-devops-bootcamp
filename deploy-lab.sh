@@ -1,7 +1,10 @@
 # Parameters
 sourceimage=$1
-resourcegroup=devops-bootcamp
-location=${2:-'eastus2'}
+vmuser=${2:-'azureuser'}
+vmpassword=${3:-'P@ssw0rd0123'}
+location=${4:-'eastus2'}
+resourcegroup=${5:-'devops-bootcamp'}
+# Constants
 accountname=$(echo gdvpblob$(od -vAn -N4 -tu4 < /dev/urandom) | sed 's/ //g')
 vmname=bootcampvm
 
