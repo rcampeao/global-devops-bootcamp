@@ -41,6 +41,14 @@ az vm create    -n $vmname \
                 >/dev/null
 echo VM created.
 
+echo Updating Username and Password...
+az vm user update
+    -n $vmname \
+    -g $resourcegroup \
+    -u $vmuser \
+    -p $vmpassword
+echo Finished updating Username and Password.
+
 echo Finished!
 
 exit 0
