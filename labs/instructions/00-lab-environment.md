@@ -1,4 +1,4 @@
-# Setup do Ambiente do Lab
+# Configuração do Ambiente do Lab
 
 Esses laboratórios geralmente são entregues pelo **Azure Global Blackbelt Team**. Mas vamos adaptar o seu conteúdo e executá-lo usando uma subscrição de Azure (fornecido no evento) e uma VM de Linux com todas as ferramentas necessárias já instaladas.
 
