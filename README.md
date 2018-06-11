@@ -2,6 +2,8 @@
 
 *Entregando aplicações modernas nativas de cloud com tecnologias open source no Azure​*
 
+![bootcamp logo](https://cdn.evbuc.com/images/42921646/196466870134/1/original.jpg)
+
 ## Visão Geral
 
 Esse workshop irá guiá-lo através de uma migração de uma aplicação "on-premise" para containers rodando em um serviço de Kubernetes no Azure.
