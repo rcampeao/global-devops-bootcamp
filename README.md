@@ -2,7 +2,7 @@
 
 *Entregando aplicações modernas nativas de cloud com tecnologias open source no Azure​*
 
-![bootcamp logo](https://cdn.evbuc.com/images/42921646/196466870134/1/original.jpg)
+![bootcamp logo](./labs/instructions/img/logo.jpg)
 
 ## Visão Geral
 
