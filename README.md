@@ -1,4 +1,4 @@
-# Azure Container Hackfest
+# Global DevOps Bootcamp
 
 *Entregando aplicações modernas nativas de cloud com tecnologias open source no Azure​*
 
