@@ -48,6 +48,11 @@ az vm user update \
     >/dev/null
 echo Finished updating Username and Password.
 
+echo Updating Firewall rules...
+az vm open-port -g $resourcegroup -n $vmname --port 3000 --priority 1001
+az vm open-port -g $resourcegroup -n $vmname --port 8080 --priority 1002
+echo Finished updating Firewall rules.
+
 echo Getting your VM public IP...
 vmip=$(az vm list-ip-addresses -n $vmname -g $resourcegroup --query [0].virtualMachine.network.publicIpAddresses[0].ipAddress -o tsv)
 echo Access your VM using:

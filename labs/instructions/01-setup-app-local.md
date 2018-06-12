@@ -1,83 +1,71 @@
-# Initial Setup and Running App on Local Machine
+# Configurar e Rodar o App Localmente
 
-## Work Environment
+## Clonar Repo no Github do Lab
 
-There are two environments you will be working in for the exercises today.
+Uma vez que você acesse sua VM, você deve clonar o repositório deste bootcamp em sua máquina.
 
-1. **Jumpbox:** The apps and containers must be run on a Linux machine. A CentOS linux machine has been created for you in your Azure subscription.
+1. Abra o terminal em sua VM.
+2. Clone o Github repo via a linha de comando
 
-    > Note: If you have bash or ssh available on your machine, it is easiest to access the jump box via SSH. Otherwise, RDP is required.
+```bash
+git clone https://github.com/CSELATAM/global-devops-bootcamp.git
+```
 
-2. **Azure Cloud Shell:** The Azure Cloud Shell will be accessed by logging into the Azure Portal (http://portal.azure.com).
+## Subir Aplicações
 
-Labs 1 and 2 require the Jumpbox. The subsequent labs all use the Azure Cloud Shell.
+### Camada do Banco de dados - MongoDB
 
-## Clone Lab Github Repo
+A camada de persistência dos dados para o app é um [MongoDB](https://www.mongodb.com/ "MongoDB Homepage"). Já foi tudo preparado, você deve apenas importar os dados para a nossa aplicação.
 
-Once you have accessed the jumpbox, you must clone the workshop repo to the machine.
-
-1. Start with a terminal on the jumpbox
-2. Clone the Github repo via the command line
-
-    ```
-    git clone https://github.com/Azure/blackbelt-aks-hackfest.git
-    ```
-
-## Get Applications up and running
-
-### Database layer - MongoDB
-
-The underlying data store for the app is [MongoDB](https://www.mongodb.com/ "MongoDB Homepage"). It is already running. We need to import the data for our application.
-
-1. Import the data using a terminal session on the jumpbox
+1. Importe os dados (previamente em arquivos json) usando uma sessão do terminal em sua VM
 
     ```bash
-    cd ~/blackbelt-aks-hackfest/app/db
+    cd ~/global-devops-bootcamp/app/db
 
-    mongoimport --host localhost:27019 --db webratings --collection heroes --file ./heroes.json --jsonArray && mongoimport --host localhost:27019 --db webratings --collection ratings --file ./ratings.json --jsonArray && mongoimport --host localhost:27019 --db webratings --collection sites --file ./sites.json --jsonArray
+    mongoimport --host localhost:27017 --db webratings --collection heroes --file ./heroes.json --jsonArray && mongoimport --host localhost:27017 --db webratings --collection ratings --file ./ratings.json --jsonArray && mongoimport --host localhost:27017 --db webratings --collection sites --file ./sites.json --jsonArray
     ```
 
-### API Application layer - Node.js
+### Camada de API da Aplicação - Node.js
 
-The API for the app is written in javascript, running on [Node.js](https://nodejs.org/en/ "Node.js Homepage") and [Express](http://expressjs.com/ "Express Homepage")
+A API para o app foi escrito em javascript, rodando em [Node.js](https://nodejs.org/en/ "Node.js Homepage") e [Express](http://expressjs.com/ "Express Homepage")
 
-1. Update dependencies and run app via node in a terminal session on the jumpbox
+1. Atualize as dependências e rode o app usando o node em uma sessão do terminal em sua VM
 
     ```bash
-    cd ~/blackbelt-aks-hackfest/app/api
+    cd ~/global-devops-bootcamp/app/api
 
     npm install && npm run localmachine
     ```
 
-2. Open a new terminal session on the jumpbox and test the API
+2. Abra uma nova sessão do terminal em sua VM e teste a API com curl
 
-    use curl
     ```bash
     curl http://localhost:3000/api/heroes
     ```
-    If you are in an RDP session, you can browse to <http://localhost:3000/api/heroes>
 
-### Web Application layer - Vue.js, Node.js
+    > Ou acesse:  http://IP-DA-SUA-VM:3000/api/heroes
 
-The web frontend for the app is written in [Vue.js](https://vuejs.org/Vue "Vue.js Homepage"), running on [Node.js](https://nodejs.org/en/ "Node.js Homepage") with [Webpack](https://webpack.js.org/ "Webpack Homepage")
+### Camada da Web da Aplicação - Vue.js, Node.js
 
-1. Open a new terminal session on the jumpbox
-2. Update dependencies and run app via node
+O front-end web deste app foi escrito em [Vue.js](https://vuejs.org/Vue "Vue.js Homepage"), rodando em [Node.js](https://nodejs.org/en/ "Node.js Homepage") com [Webpack](https://webpack.js.org/ "Webpack Homepage")
+
+1. Abra uma **nova** sessão do terminal em sua VM
+2. Atualize as dependências e rode o app usando o node
 
     ```bash
-    cd ~/blackbelt-aks-hackfest/app/web
+    cd ~/global-devops-bootcamp/app/web
 
     npm install && npm run localmachine
     ```
-3. Test the web front-end
+3. Teste o front-end web
 
-    The jumpbox has an external DNS name and port 8080 is open. You can browse your running app with a link such as: http://jump-vm-csc4f653357f-q72zm5c4ggcza.eastus.cloudapp.azure.com:8080 
+    > Acesse:  http://IP-DA-SUA-VM:8080
 
-    You can also test from a new terminal session in the jumpbox
+    Você também pode estar de uma nova sessão do terminal em sua VM
     ```bash
     curl http://localhost:8080
     ```
 
-## Clean-up
+## Limpeza
 
-Close the web and api apps in the terminal windows by hitting `ctrl-c` in each of the corresponding terminal windows
+Feche a sessão web e a api no terminal usando a combinação `ctrl-c` em cada terminal correspondente.
