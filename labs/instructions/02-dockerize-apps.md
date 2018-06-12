@@ -1,21 +1,21 @@
-# Dockerizing Applications
+# Dockerizando Aplicações
 
-## Build Container Images
+## Buildar as images dos Containers
 
-For the first container, we will be creating a Dockerfile from scratch. For the other containers, the Dockerfiles are provided.
+Para o primeiro container, nós vamos criar um Dockerfile do zero. Para os outros containers, os Dockerfiles serão fornecidos.
 
 ### Web Container
 
-1. Create a Dockerfile
+1. Crie um Dockerfile
 
-    * Access the jumpbox
-    * In the `~/blackbelt-aks-hackfest/app/web` directory, add a file called "Dockerfile"
-        * If you are in an SSH session, use vi as the editor
-        * In RDP, you can use Visual Studio Code
+    * Acesse a VM
+    * Dentro do diretório `~/global-devops-bootcamp/app/web`, adicione um arquivo chamado 'Dockerfile'.
+        * Se você está numa sessão SSH, use VI como seu editor, por exemplo.
+        * Se está em sua máquina ou via RDP, você pode usar o Visual Studio Code
 
-    * Add the following lines and save:
+    * Adicione as seguintes linhas e salve o 'Dockerfile':
 
-        ```
+        ```Dockerfile
         FROM node:9.4.0-alpine
 
         ARG VCS_REF
@@ -37,75 +37,92 @@ For the first container, we will be creating a Dockerfile from scratch. For the 
         CMD [ "npm", "run", "container" ]
         ```
 
-2. Create a container image for the node.js Web app
+2. Crie uma imagem do container para o web app em node.js, a partir de uma sessão do terminal:
 
-    From the terminal session: 
-
-    ```
-    cd ~/blackbelt-aks-hackfest/app/web
+    ```bash
+    cd ~/global-devops-bootcamp/app/web
     
     docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` --build-arg IMAGE_TAG_REF=v1 -t rating-web .
     ```
 
-3. Validate image was created with `docker images`
+3. Valique que a imagem foi criada com o comando:
+
+    ```bash
+    docker images
+    ```
 
 ### API Container
 
-In this step, the Dockerfile has been created for you. 
+Nesse passo, o Dockerfile já foi criado para você.
 
-1. Create a container image for the node.js API app
+1. Crie a imagem do container para a API do app em node.js:
 
-    ```
-    cd ~/blackbelt-aks-hackfest/app/api
+    ```bash
+    cd ~/global-devops-bootcamp/app/api
 
     docker build -t rating-api .
     ```
 
-2. Validate image was created with `docker images`
+2. Valique que a imagem foi criada com o comando:
+
+    ```bash
+    docker images
+    ```
 
 ### MongoDB Container
 
-1. Create a MongoDB image with data files
+1. Crie uma imagem do MongoDB com os arquivos de dados pré-carregados:
 
-    ```
-    cd ~/blackbelt-aks-hackfest/app/db
+    ```bash
+    cd ~/global-devops-bootcamp/app/db
 
     docker build -t rating-db .
     ```
 
-2. Validate image was created with `docker images`
+2. Valique que a imagem foi criada com o comando:
 
+    ```bash
+    docker images
+    ```
 
-## Run Containers
+## Rodar os Containers
 
-### Setup Docker Network
+### Setup da Rede do Docker
 
-Create a docker bridge network to allow the containers to communicate internally. 
+Crie uma bridge na rede do Docker para permitir que os containers possam se comunicar internamente/localmente.
 
-```
+```bash
 docker network create --subnet=172.18.0.0/16 my-network
 ```
 
 ### MongoDB Container
 
-1. Run mongo container
+1. Rode o container do Mongo
 
-    ```
+    ```bash
+    # Pare o serviço local:
+    sudo service mongod stop
+    # Suba o container:
     docker run -d --name db --net my-network --ip 172.18.0.10 -p 27017:27017 rating-db
     ```
 
-2. Validate by running `docker ps -a`
+2. Valide que está rodando
 
-3. Import data into database
-
+    ```bash
+    docker ps -a
     ```
+
+3. Importe os dados em seu banco de dados:
+
+    ```bash
     docker exec -it db bash
     ```
 
-    You will have a prompt inside the mongo container. From that prompt, run the import script (`./import.sh`)
+    Neste momento você estará dentro de uma sessão do container do Mongo. Agora, você deverá rodar o script de importação (`./import.sh`):
 
-    ```
-    root@61f9894538d0:/# ./import.sh
+    ```bash
+    $ ./import.sh
+
     2018-01-10T19:26:07.746+0000	connected to: localhost
     2018-01-10T19:26:07.761+0000	imported 4 documents
     2018-01-10T19:26:07.776+0000	connected to: localhost
@@ -114,68 +131,85 @@ docker network create --subnet=172.18.0.0/16 my-network
     2018-01-10T19:26:07.761+0000	imported 2 documents
     ```
 
-4. Type `exit` to exit out of container
+4. Escreva `exit` para sair do container:
+
+    ```bash
+    $ exit
+    ```
 
 ### API Container
 
-1. Run api app container
+1. Suba o container da API:
 
-    ```
+    ```bash
     docker run -d --name api -e "MONGODB_URI=mongodb://172.18.0.10:27017/webratings" --net my-network --ip 172.18.0.11 -p 3000:3000 rating-api
     ```
 
-    > Note that environment variables are used here to direct the api app to mongo.
+    > Note que que as variáveis de ambiente aqui são usadas para conectar a API diretamente ao Mongo.
 
-2. Validate by running `docker ps -a`
+2. Valide que está rodando
 
-3. Test api app with curl
+    ```bash
+    docker ps -a
     ```
+
+3. Teste a API com curl
+
+    ```bash
     curl http://localhost:3000/api/heroes
     ```
 
 ### Web Container
 
-1. Run web app container
+1. Rode o container do web app:
 
-    ```
+    ```bash
     docker run -d --name web -e "API=http://172.18.0.11:3000/" --net my-network --ip 172.18.0.12 -p 8080:8080 rating-web
     ```
 
-2. Validate by running `docker ps -a`
+2. Valide que está rodando
 
-3. Test web app
-    
-    The jumpbox has a Public IP address and port 8080 is open. You can browse your running app with a link such as: http://13.90.246.114:8080 
-
-    You can also test via curl
+    ```bash
+    docker ps -a
     ```
+
+3. Teste o web app
+
+    Você pode testar via curl
+
+    ```bash
     curl http://localhost:8080
     ```
 
-## Azure Container Registry (ACR)
+    Lembre-se que você também está usando uma VM com IP público, o qual está com a porta 8080 aberta.
+    Você pode ir em seu browser e verificar que o aplicativo está rodando através do link: http://xyz.xyz.xyz.xyz:8080 
 
-Now that we have container images for our application components, we need to store them in a secure, central location. In this lab we will use Azure Container Registry for this.
+    > Acesse:  http://IP-DA-SUA-VM:8080
 
-### Create Azure Container Registry instance
+## Publicar no Azure Container Registry (ACR)
 
-1. In the browser, sign in to the Azure portal at https://portal.azure.com. Your Azure login ID will look something like `odl_user_9294@gbbossteamoutlook.onmicrosoft.com`
-2. Click "Create a resource" and select "Azure Container Registry"
-3. Provide a name for your registry (this must be unique)
-4. Use the existing Resource Group
-5. Enable the Admin user
-6. Use the 'Standard' SKU (default)
+Agora que nós temos as imagens dos containers para os componentes da nossa aplicação, nós precisamos guardá-los em um local seguro e centralizado. Neste laboratório nós usaremos o Azure Container Registry para isso.
 
-    > The Standard registry offers the same capabilities as Basic, but with increased storage limits and image throughput. Standard registries should satisfy the needs of most production scenarios.
+### Criar instância do Azure Container Registry
 
-### Login to your ACR with Docker
+1. No seu browser, logue-se no portal do Azure em https://portal.azure.com.
+2. Clique em "Create a resource" (Criar um recurso) e selecione "Azure Container Registry"
+3. Dê um nome para o seu registry (ele deve ser único)
+4. Use o Resource Group existente
+5. Habilite o Admin user
+6. Use o SKU 'Standard' (padrão)
 
-1. Browse to your Container Registry in the Azure Portal
-2. Click on "Access keys"
-3. Make note of the "Login server", "Username", and "password"
-4. In the terminal session on the jumpbox, set each value to a variable as shown below
+    > O registry Standard oferece as mesmas capacidades que o Basic, mas com limites de armazenamento e throughput de imagens aumentados. O registry Standard deve satisfazer a maioria dos ambientes em produção.
 
-    ```
-    # set these values to yours
+### Logar em seu ACR com Docker
+
+1. Vá até o seu Container Registry no Portal do Azure
+2. Clique em "Access keys"
+3. Guarde em um bloco de notas os valores de "Login server", "Username" e "password"
+4. Em sua sessão do terminal da VM, atribua cada valor a respectiva variavel abaixo, conforme abaixo:
+
+    ```bash
+    # coloque seus valores
     ACR_SERVER=
     ACR_USER=
     ACR_PWD=
@@ -183,25 +217,23 @@ Now that we have container images for our application components, we need to sto
     docker login --username $ACR_USER --password $ACR_PWD $ACR_SERVER
     ```
 
-### Tag images with ACR server and repository 
+### Coloque Tags nas imagens com o servidor ACR e seu repositório
 
-```
-# Be sure to replace the login server value
-
+```bash
 docker tag rating-db $ACR_SERVER/azureworkshop/rating-db:v1
 docker tag rating-api $ACR_SERVER/azureworkshop/rating-api:v1
 docker tag rating-web $ACR_SERVER/azureworkshop/rating-web:v1
 ```
 
-### Push images to registry
+### Faça o Push das imagens para o registry
 
-```
+```bash
 docker push $ACR_SERVER/azureworkshop/rating-db:v1
 docker push $ACR_SERVER/azureworkshop/rating-api:v1
 docker push $ACR_SERVER/azureworkshop/rating-web:v1
 ```
 
-Output from a successful `docker push` command is similar to:
+O output do comando `docker push` com sucesso deverá ser similar a abaixo:
 
 ```
 The push refers to a repository [mycontainerregistry.azurecr.io/azureworkshop/rating-db]
@@ -221,7 +253,7 @@ cfce7a8ae632: Pushed
 v1: digest: sha256:f84eba148dfe244f8f8ad0d4ea57ebf82b6ff41f27a903cbb7e3fbe377bb290a size: 3028
 ```
 
-### Validate images in Azure
+### Validar imagens no Azure
 
-1. Return to the Azure Portal in your browser and validate that the images appear in your Container Registry under the "Repositories" area.
-2. Under tags, you will see "v1" listed.
+1. Retorne ao Portal do Azure em seu browser e valide que as images aparecem em seu Container Registry dentro da aba 'Repositories'.
+2. Na parte de tags, você verá "v1" listado.

@@ -63,7 +63,7 @@ Finished updating Firewall rules.
 
 Getting your VM public IP...
 Access your VM using:
-ssh azureuser@104.210.12.29
+ssh azureuser@xyz.xyz.xyz.xyz
 
 Finished!
 ```
@@ -71,7 +71,7 @@ Finished!
 Use o IP acima para conectar-se em sua VM via SSH. (Caso não tenha instalado um cliente ssh e estiver no Windows, tente [Putty](https://www.putty.org/), por exemplo).
 
 ```bash
-$ ssh azureuser@104.210.12.29
+$ ssh azureuser@xyz.xyz.xyz.xyz
 ```
 
 ## Auto-guiado

@@ -16,7 +16,7 @@ Os labs são baseados em uma aplicação node.js que permite a votação de supe
 
 0. [Configuração do Ambiente do Lab](labs/instructions/00-lab-environment.md)
 1. [Configurar e Rodar o App Localmente](labs/instructions/01-setup-app-local.md)
-2. [Create Docker images for apps and push to Azure Container Registry](labs/instructions/02-dockerize-apps.md)
+2. [Dockerizando Aplicações e usando o Azure Container Registry](labs/instructions/02-dockerize-apps.md)
 3. [Criar o Azure Kubernetes Service (AKS)](labs/instructions/03-create-aks-cluster.md)
 4. [Deploy application to Azure Kubernetes Service](labs/instructions/04-deploy-app-aks.md)
 5. [Kubernetes UI Overview](labs/instructions/05-kubernetes-ui.md)
