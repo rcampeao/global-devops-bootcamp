@@ -41,7 +41,7 @@ Para o primeiro container, nós vamos criar um Dockerfile do zero. Para os outro
 
     ```bash
     cd ~/global-devops-bootcamp/app/web
-    
+
     docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` --build-arg IMAGE_TAG_REF=v1 -t rating-web .
     ```
 

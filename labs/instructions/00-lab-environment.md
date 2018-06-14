@@ -74,6 +74,10 @@ Use o IP acima para conectar-se em sua VM via SSH. (Caso não tenha instalado um
 $ ssh azureuser@xyz.xyz.xyz.xyz
 ```
 
+> Usuario padrão: azureuser
+
+> Senha padrão: P@ssw0rd0123
+
 ## Auto-guiado
 
 É possível fazer o laboratório em sua própria máquina. Você precisará dos seguintes componentes disponíveis/instalados:

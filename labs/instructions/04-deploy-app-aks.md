@@ -1,51 +1,53 @@
-# Deploy the Superhero Ratings App to AKS
+# Deploy do Aplicativo de Super-Heróies para o AKS
 
-## Review/Edit the YAML Config Files
+## Revisar/Editar os arquivos de configuração YAML
 
-1. In Azure Cloud Shell edit `heroes-db.yaml` using `vi`
-    ```
-    cd ~/blackbelt-aks-hackfest/labs/helper-files
+1. Em uma sessão do terminal de sua VM, edite o arquivo `heroes-db.yaml` usando `vi`:
+
+    ```bash
+    cd ~/global-devops-bootcamp/labs/helper-files
 
     vi heroes-db.yaml
     ```
-    * Review the yaml file and learn about some of the settings
-    * Update the yaml file for the proper container image name
-    * You will need to replace the `<login server>` with the ACR login server created in lab 2
-    * Example: 
 
-        ```
+    * Revise o arquivo yaml e aprenda como são usadas as configurações e como são setadas as diversas propriedades.
+    * Atualize o arquivo yaml para contemplar o nome correto da imagem de nossos containers. Para isso, você deverá substituir o texto `<login server>` com o login server do ACR, criado no laboratório 2.
+    * Exemplo:
+
+        ```yaml
         spec:
         containers:
         - image: mycontainerregistry.azurecr.io/azureworkshop/rating-db:v1
             name:  heroes-db-cntnr
         ```
 
-2. In Azure Cloud Shell edit `heroes-web-api.yaml` using `vi`
-    ```
-    cd ~/blackbelt-aks-hackfest/labs/helper-files
+2. Em uma sessão do terminal de sua VM, edite o arquivo  `heroes-web-api.yaml` usando `vi`:
+
+    ```bash
+    cd ~/global-devops-bootcamp/labs/helper-files
 
     vi heroes-web-api.yaml
     ```
-    * Review the yaml file and learn about some of the settings. Note the environment variables that allow the services to connect
-    * Update the yaml file for the proper container image names.
-    * You will need to replace the `<login server>` with the ACR login server created in lab 2
-        > Note: You will update the image name TWICE updating the web and api container images.
 
-    * Example: 
+    * Revise o arquivo yaml e aprenda como são usadas as configurações e como são setadas as diversas propriedades. Note as variáveis de ambiente que permitem que os serviços se conectem.
+    * Atualize o arquivo yaml para contemplar o nome correto da imagem de nossos containers. Para isso, você deverá substituir o texto `<login server>` com o login server do ACR, criado no laboratório 2.
+        > Nota: Você atualizará o nome da imagem **DUAS VEZES** neste arquivo (web app e web api).
 
-        ```
+    * Exemplo:
+
+        ```yaml
         spec:
         containers:
         - image: mycontainerregistry.azurecr.io/azureworkshop/rating-web:v1
             name:  heroes-web-cntnr
         ```
 
-## Setup AKS with access to Azure Container Registry
+## Configure o AKS para ter acesso ao Azure Container Registry
 
-There are a few ways that AKS clusters can access your private Azure Container Registry. Generally the service account that kubernetes utilizes will have rights based on its Azure credentials. In our lab config, we must create a secret to allow this access. 
+Existem algumas maneiras de fazer com que clusters do AKS tenham acesso ao seu Azure Container Registry privado. Geralmente, um service account que o kubernetes utiliza terá os direitos necessários para acessar o registry baseado em suas credenciais do Azure. Em nosso laboratório, nós devemos criar um secret para permitir esse acesso.
 
-```
-# set these values to yours
+```bash
+# coloque seus valores
 ACR_SERVER=
 ACR_USER=
 ACR_PWD=
@@ -53,33 +55,35 @@ ACR_PWD=
 kubectl create secret docker-registry acr-secret --docker-server=$ACR_SERVER --docker-username=$ACR_USER --docker-password=$ACR_PWD --docker-email=superman@heroes.com
 ```
 
-> Note: You can review the `heroes-db.yaml` and `heroes-web-api.yaml` to see where the `imagePullSecrets` are configured.
+> Nota: Você pode verificar que tanto em `heroes-db.yaml` quanto em `heroes-web-api.yaml` é possível ver que o campo `imagePullSecrets` estão configurados para um secret chamado `acr-secret`.
 
-## Deploy database container to AKS
+## Deploy do banco de dados como container no AKS
 
-* Use the kubectl CLI to deploy each app
-    ```
-    cd ~/blackbelt-aks-hackfest/labs/helper-files
+* Use o CLI do kubectl para fazer o deploy de cada app
+
+    ```bash
+    cd ~/global-devops-bootcamp/labs/helper-files
 
     kubectl apply -f heroes-db.yaml
     ```
 
-* Get mongodb pod name
-    ```
-    kubectl get pods
+* Pegue o nome do pod do mongodb
+
+    ```bash
+    $ kubectl get pods
 
     NAME                                 READY     STATUS    RESTARTS   AGE
     heroes-db-deploy-2357291595-k7wjk    1/1       Running   0          3m
 
-    MONGO_POD=heroes-db-deploy-2357291595-k7wjk
+    $ MONGO_POD=$(kubectl get pods --output=jsonpath={.items..metadata.name})
     ```
 
-* Import data into MongoDB using script
-    ```
-    # ensure the pod name variable is set to your pod name
-    # once you exec into pod, run the `import.sh` script
+* Importe os dados para o MongoDB usando o script
 
-    kubectl exec -it $MONGO_POD bash
+    ```bash
+    # Assim que rodar o exec dentro do pod, execute o script import.sh
+
+    $ kubectl exec -it $MONGO_POD bash
 
     root@heroes-db-deploy-2357291595-xb4xm:/# ./import.sh
     2018-01-16T21:38:44.819+0000	connected to: localhost
@@ -90,24 +94,25 @@ kubectl create secret docker-registry acr-secret --docker-server=$ACR_SERVER --d
     2018-01-16T21:38:45.152+0000	imported 2 documents
     root@heroes-db-deploy-2357291595-xb4xm:/# exit
 
-    # be sure to exit pod as shown above
+    # não se esqueça de sair do container (exit)
     ```
 
-## Deploy the web and api containers to AKS
+## Deploy dos containers do web app e web api para o AKS
 
-* Use the kubectl CLI to deploy each app
+* Use o CLI do kubectl para fazer o deploy de cada app
 
-    ```
-    cd ~/blackbelt-aks-hackfest/labs/helper-files
+    ```bash
+    cd ~/global-devops-bootcamp/labs/helper-files
 
     kubectl apply -f heroes-web-api.yaml
     ```
 
-## Validate
+## Confirmar
 
-* Check to see if pods are running in your cluster
-    ```
-    kubectl get pods
+* Confirme se todos os pods estão rodando em seu cluster
+
+    ```bash
+    $ kubectl get pods
 
     NAME                                 READY     STATUS    RESTARTS   AGE
     heroes-api-deploy-1140957751-2z16s   1/1       Running   0          2m
@@ -115,9 +120,10 @@ kubectl create secret docker-registry acr-secret --docker-server=$ACR_SERVER --d
     heroes-web-1645635641-pfzf9          1/1       Running   0          2m
     ```
 
-* Check to see if services are deployed.
-    ```
-    kubectl get service
+* Confirme se todos os serviços estão ativos em seu cluster
+
+    ```bash
+    kubectl get services
 
     NAME         TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)          AGE
     api          LoadBalancer   10.0.20.156   52.176.104.50    3000:31416/TCP   5m
@@ -126,6 +132,6 @@ kubectl create secret docker-registry acr-secret --docker-server=$ACR_SERVER --d
     web          LoadBalancer   10.0.54.206   52.165.235.114   8080:32404/TCP   5m
     ```
 
-* Browse to the External IP for your web application (on port 8080) and try the app
+* Visite o IP externo da sua aplicação web (na porta 8080) e teste o aplicativo!
 
-> The public IP can take a few minutes to create with a new cluster. Sit back and relax. Maybe check Facebook. 
+> Nota: O IP público do Load Balancer pode levar alguns minutos para ser criado e adicionado junto ao seu novo cluster. Se quiser, enquanto espera, essa é a hora de publicar algo legal sobre o DevOps Bootcamp no Facebook! :)

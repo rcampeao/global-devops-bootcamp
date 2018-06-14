@@ -2,7 +2,7 @@
 
 ## Criar AKS cluster
 
-1. Logue seu cliente no Azure, 
+1. Logue seu cliente no Azure,
 
 ```bash
 az login
@@ -19,7 +19,7 @@ az account list
 3. Crie um Resource Group
 
 ```bash
-location='eastus2'
+location='eastus'
 resourcegroup='devops-bootcamp-aks'
 az group create --name $resourcegroup --location $location
 ```
@@ -30,7 +30,15 @@ az group create --name $resourcegroup --location $location
 
 ```bash
 clustername='myakscluster'
-az aks create -n $clustername -g $resourcegroup -c 2 -k 1.7.7 --generate-ssh-keys -l $location
+
+az aks create \
+    -n $clustername \
+    -g $resourcegroup \
+    -l $location \
+    -c 2 \
+    -k 1.7.7 \
+    -s Standard_D2_v2 \
+    --generate-ssh-keys
 ```
 
 5. Verifique o status do seu cluster. O `ProvisioningState` deverá ser `Succeeded`, após completado.
