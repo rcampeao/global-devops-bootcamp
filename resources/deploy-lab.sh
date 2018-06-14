@@ -2,7 +2,7 @@
 sourceimage=$1
 vmuser=${2:-'azureuser'}
 vmpassword=${3:-'P@ssw0rd0123'}
-location=${4:-'eastus2'}
+location=${4:-'eastus'}
 resourcegroup=${5:-'devops-bootcamp'}
 # Constants
 accountname=$(echo gdvpblob$(od -vAn -N4 -tu4 < /dev/urandom) | sed 's/ //g')
