@@ -35,6 +35,7 @@ az vm create    -n $vmname \
                 -g $resourcegroup \
                 --attach-os-disk $destination \
                 --os-type linux \
+                --size Standard_D2_v2 \
                 --use-unmanaged-disk \
                 >/dev/null
 echo VM created.
