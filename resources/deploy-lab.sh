@@ -50,8 +50,8 @@ az vm user update \
 echo Finished updating Username and Password.
 
 echo Updating Firewall rules...
-az vm open-port -g $resourcegroup -n $vmname --port 3000 --priority 1001
-az vm open-port -g $resourcegroup -n $vmname --port 8080 --priority 1002
+az vm open-port -g $resourcegroup -n $vmname --port 3000 --priority 1001 >/dev/null
+az vm open-port -g $resourcegroup -n $vmname --port 8080 --priority 1002 >/dev/null
 echo Finished updating Firewall rules.
 
 echo Getting your VM public IP...
