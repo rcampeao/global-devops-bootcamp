@@ -1,111 +1,120 @@
-# CI/CD with Brigade
+# CI/CD com Brigade
 
-In this lab, we will use Brigade >=0.11.0 to automate build and delivery of the web application into our AKS cluster. 
+Nesse lab, nós vamos usar Brigade (>=0.11.0) para automarizar o build e o delivery da nossa aplicação web para o nosso cluster de AKS.
 
-Learn more about Brigade here: http://brigade.sh 
+Aprenda e veja mais detalhes sobre Brigade aqui: http://brigade.sh 
 
-> Note. We chose to use Brigade here, but other tools such as Jenkins can perform the same functions.
+> Nota: Nós escolhemos usar Brigade aqui, mas outras ferramentas como Jenkins poderiam fazer as mesmas funções.
 
-## Pre-requisites
+## Configurar o Helm
 
-This lab has pre-requisites. Some have been completed in prior labs.
+Caso você esteja fazendo o laboratório em sua VM Linux, o cliente do helm já foi instalado.
 
-* Container images created and pushed to Azure Container Registry (Lab #2)
-* AKS cluster deployed (Lab #3)
-* Deployed the web, api, and database components (Lab #4)
-* Helm is required. Check to see if Helm is working: 
+Use o comando abaixo pra instalar Tiller (componente server do Helm) em seu cluster de Kubernetes:
 
-    ```
-    helm version
+```bash
+helm init
+```
 
-    Client: &version.Version{SemVer:"v2.7.2", GitCommit:"8478fb4fc723885b155c924d1c8c410b7a9444e6", GitTreeState:"clean"}
-    Server: &version.Version{SemVer:"v2.7.2", GitCommit:"8478fb4fc723885b155c924d1c8c410b7a9444e6", GitTreeState:"clean"}
-    ```
+Verifique que o comando abaixo retorna uma resposta tanto do `Client` quanto do `Server`.
 
-* Github account. If you already have one, you can use it here. Otherwise, go to https://github.com/join to create one. For the instructions below, I will be using https://github.com/thedude-lebowski as a sample.
+```bash
+$ helm version
 
-## Install Brigade
+Client: &version.Version{SemVer:"v2.9.1", GitCommit:"20adb27c7c5868466912eebdf6664e7390ebe710", GitTreeState:"clean"}
+Server: &version.Version{SemVer:"v2.9.1", GitCommit:"20adb27c7c5868466912eebdf6664e7390ebe710", GitTreeState:"clean"}
+```
 
-1. Update helm repo
+Para este laboratório, você precisará ter uma conta no Github. Caso não tenha, faça seu cadastro [aqui](https://github.com/join). Como exemplo, estaremos usando a conta `https://github.com/thedude-lebowski`, mas lembre-se de trocar tais valores para a sua conta.
 
-    ```
+## Instalar o Brigade
+
+1. Atualiza os repos do helm
+
+    ```bash
     helm repo add brigade https://azure.github.io/brigade
     ```
 
-2. Install brigade chart
+2. Instale o chart do brigade
 
-    ```
-    helm install -n brigade brigade/brigade
-
-    # Note that if you are using kubernetes pre-1.8, you will need to run:
+    ```bash
+    # k8s pre-1.8
     helm install -n brigade brigade/brigade --set vacuum.enabled=false
+    ```
 
-    # you should see 3 new pods
+    Confira o status da instalação
 
-    odl_user@Azure:~$ kubectl get pod | grep brigade
+    ```bash
+    helm status brigade
+    ```
+
+    Você deve ver 3 pods
+
+    ```bash
+    $ kubectl get pods | grep brigade
+
     brigade-brigade-api-884998b78-h4qt5     1/1       Running   0          41s
     brigade-brigade-ctrl-576bc44775-g9nht   1/1       Running   0          41s
     brigade-brigade-gw-84c5dbf7f9-hfzqq     1/1       Running   0          41s
     ```
 
-## Fork Github Repo
+## Fork do Repo do GitHub
 
-1. Open Github and login with your account
-2. Browse to https://github.com/Azure/blackbelt-aks-hackfest 
-3. Click `Fork` to copy the repository into your account
+1. Abra o Github e logue-se com sua conta
+2. Vá até to https://github.com/CSELATAM/global-devops-bootcamp
+3. Clique em `Fork` para copiar o nosso repositório em sua conta
 
     ![Fork the workshop Github repo](img/github-fork.png "Fork the workshop Github repo")
 
-## Setup Brigade Project
+## Configurar o projeto do Brigade
 
-1. Create a brigade project YAML file
+1. Crie um arquivo YAML para o projeto do brigade
 
-    * Create a file called ```brig-proj-heroes.yaml```
-    * Add the contents below to start your file
+    * Crie um arquivo chamado `brig-proj-heroes.yaml`
+    * Adicione o conteúdo abaixo em seu arquivo para começar a editá-lo
 
         ```yaml
-        project: "REPLACE"
-        repository: "REPLACE"
-        cloneURL: "REPLACE"
-        sharedSecret: "create-something-super-secret"
-        # MAKE SURE YOU CHANGE THIS. It's basically a password
+        project: "TROCAR"
+        repository: "TROCAR"
+        cloneURL: "TROCAR"
+        sharedSecret: "crie-algo-super-secreto"
+        # TROQUE ISSO AQUI ACIMA! É basicamente uma senha.
         github:
-          token: "REPLACE"
+          token: "TROCAR"
         secrets:
-          acrServer: REPLACE
-          acrUsername: REPLACE
-          acrPassword: "REPLACE"
+          acrServer: TROCAR
+          acrUsername: TROCAR
+          acrPassword: "TROCAR"
         vcsSidecar: "deis/git-sidecar:v0.11.0"
         ```
 
-    * Edit the values from above to match your Github account (example below)
-        * project: thedude-lebowski/blackbelt-aks-hackfest
-        * repository: github.com/thedude-lebowski/blackbelt-aks-hackfest
-        * cloneURL: https://github.com/thedude-lebowski/blackbelt-aks-hackfest.git
+    * Edite os valores acima para serem as mesmas da sua conta do GitHub (há um exemplo logo abaixo)
+        * *project*: thedude-lebowski/global-devops-bootcamp
+        * *repository*: github.com/thedude-lebowski/global-devops-bootcamp
+        * *cloneURL*: https://github.com/thedude-lebowski/global-devops-bootcamp.git
 
-    * Create a Github token and update the ```brig-proj-heroes.yaml```
-        * In your Github, click on `Settings` and `Developer settings`
-        * Select `Personal sccess tokens`
-        * Select `Generate new token`
+    * Crie um personal access token do Github token e atualize o `brig-proj-heroes.yaml`
+        * Em seu Github, clique em `Settings` e depois em `Developer settings`
+        * Selecione `Personal sccess tokens`
+        * Selecione `Generate new token`
             ![Github token](img/github-token.png "Github token")
-        * Provide a description and give access to the `repo`
+        * Dê uma descrição e acesso a `repo`
             ![Github token access](img/github-token-access.png "Github token access")
 
-        > Note: More details on Brigade and Github integration are here: https://github.com/Azure/brigade/blob/master/docs/topics/github.md 
+        > Nota: Mais detalhes entre a integração do Brigade com o GitHub podem ser encontradas aqui: https://github.com/Azure/brigade/blob/master/docs/topics/github.md
 
-    * Gather your ACR credentials from the Azure portal. Edit the ```brig-proj-heroes.yaml``` for these values
+    * Pegue as suas credenciais do ACR (Azure Container Registry) pelo portal do Azure (as mesmas usadas anteriormente). Edite o arquivo `brig-proj-heroes.yaml` usando esses valores
         * acrServer
         * acrUsername
         * acrPassword
 
-    * After the above steps, your file will look like the below (values are not valid for realz)
+    * Depois das etapas acima, seu arquivo deve parecer com o abaixo (os valores são apenas exemplos, não são reais)
 
         ```yaml
-        project: "thedude-lebowski/blackbelt-aks-hackfest"
-        repository: "github.com/thedude-lebowski/blackbelt-aks-hackfest"
-        cloneURL: "https://github.com/thedude-lebowski/blackbelt-aks-hackfest"
-        sharedSecret: "create-something-super-secret"
-        # MAKE SURE YOU CHANGE THIS. It's basically a password
+        project: "thedude-lebowski/global-devops-bootcamp"
+        repository: "github.com/thedude-lebowski/global-devops-bootcamp"
+        cloneURL: "https://github.com/thedude-lebowski/global-devops-bootcamp.git"
+        sharedSecret: "9485fdde3b53d8347e9e4d711ae2ae0e287d2d38"
         github:
           token: "58df6bf1c6bogus73d2e76b54531c35f45dfe66c"
         secrets:
@@ -115,17 +124,17 @@ This lab has pre-requisites. Some have been completed in prior labs.
         vcsSidecar: "deis/git-sidecar:v0.11.0"
         ```
 
-2. Create your brigade project
+2. Crie seu projeto do brigade
 
-    ```
-    # from the directory where your file from step #1 was created
+    ```bash
+    # no mesmo diretório do arquivo que criamos na etapa anterior
 
     helm install --name brig-proj-heroes brigade/brigade-project -f brig-proj-heroes.yaml
-    ``` 
+    ```
 
-    > Note: There is a ```brig``` CLI client that allows you to view your brigade projects. More details here: <https://github.com/Azure/brigade/tree/master/brig>
+    > Nota: Existe um CLI chamado `brig`, que permite que você visualize e intereja com seus projetos do brigade. Mais detalhes aqui: <https://github.com/Azure/brigade/tree/master/brig>
 
-## Setup Brigade Pipeline
+## Configurar o Pipeline do Brigade
 
 1. In your forked Github repo, add a file called ```brigade.js```
 2. Paste the contents from the sample [brigade.js](../helper-files/brigade.js) file in this file
@@ -147,7 +156,7 @@ This lab has pre-requisites. Some have been completed in prior labs.
 
 In our earlier labs, we had to create a Dockerfile for the web app. Since you forked the repo, we have to do this again.
 
-* In the `~/blackbelt-aks-hackfest/app/web` directory, in Github, add a file called "Dockerfile"
+* In the `~/global-devops-bootcamp/app/web` directory, in Github, add a file called "Dockerfile"
 * Add the following lines and save (this will be used by Brigade later)
 
     ```
@@ -199,7 +208,7 @@ In our earlier labs, we had to create a Dockerfile for the web app. Since you fo
 
 ## Test the CI/CD Pipeline
 
-1. Update the web application. Directly in your forked Github repo, edit the `Footer.vue` file. Stored in: `blackbelt-aks-hackfest/app/web/src/components/`
+1. Update the web application. Directly in your forked Github repo, edit the `Footer.vue` file. Stored in: `global-devops-bootcamp/app/web/src/components/`
 2. Find the snippet below *(line 13)* and change the text _"Azure Global Blackbelt Team"_ to your name or whatever you would like to display.
 
     ```

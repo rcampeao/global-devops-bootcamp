@@ -88,6 +88,7 @@ $ ssh azureuser@xyz.xyz.xyz.xyz
 * Docker
 * Azure CLI
 * Kubernetes CLI (kubectl)
+* helm
 * npm
 * Node.js (apenas o lab #1 precisa dele)
 * MongoDB (apenas o lab #1 precisa dele)

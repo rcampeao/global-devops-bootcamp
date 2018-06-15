@@ -1,38 +1,38 @@
-# Kubernetes Dashboard
+# Dashboard do Kubernetes
 
 The Kubernetes dashboard is a web ui that lets you view, monitor, and troubleshoot Kubernetes resources.
 
 > Note: The Kubernetes dashboard is a secured endpoint and can only be accessed using the SSH keys for the cluster. Since cloud shell runs in the browser, it is not possible to tunnel to the dashboard using the steps below.
 
-```bash
-ssh -L 8001:localhost:8001 azureuser@104.41.132.133
-```
+## Acessando a UI da Dashboard
 
-```bash
-kubectl proxy &
-```
+Existem várias maneiras de acessar a dashboard do Kubernetes. Em sua máquina local, você poderia simplesmente usar o comando `kubectl proxy` para criar um túnel seguro entre a API do Kubernetes e seu computador - não expondo a UI para a internet. Mas como estamos usando uma VM entre nosso computador e o cluster, precisamos criar parte do túnel via ssh.
 
-### Accessing The Dashboard UI
+* Crie o túnel:
 
-There are multiple ways of accessing Kubernetes dashboard. You can access through kubectl command-line interface or through the master server API. We'll be using kubectl, as it provides a secure connection, that doesn't expose the UI to the internet.
+    ```bash
+    ssh -L 8001:localhost:8001 azureuser@xyz.xyz.xyz.xyz
+    ```
 
-1. Command-Line Proxy
+* Em seguida, já logado na VM, faça:
 
-    * Open an RDP session to the jumpbox IP with username and password
-    * Run ```az login``` to authenticate with Azure in order to use Azure CLI in the Jumpbox instead of Cloud Shell
-    * Run ```NAME=$(az group list -o table | grep ODL | awk '{print $1}')``` in order to retrieve the name of the resource group for your Azure account and put it in the NAME variable.
-    * Run ```CLUSTER_NAME="${NAME//_}"``` in order to retrieve the cluster name (to remove the underscore)
-    * Run ```az aks get-credentials -n $CLUSTER_NAME -g $NAME``` in order to get the credentials to access our managed Kubernetes cluster in Azure
-    * Run ```kubectl proxy```
-    * This creates a local proxy to 127.0.0.1:8001
-    * Open a web browser (Firefox is pre-installed on the Jumpbox) and point to: <http://127.0.0.1:8001/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#!/cluster?namespace=default>
+    ```bash
+    kubectl proxy &
+    ```
 
-### Explore Kubernetes Dashboard
+* Abra a UI em um navegador em sua máquina local (Chrome, Firefox, Edge, etc) e navegue até <http://127.0.0.1:8001/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#!/cluster?namespace=default>
 
-1. In the Kubernetes Dashboard select nodes to view
+### Explorando a Dashboard do Kubernetes
+
+1. Em sua Dashboard do Kubernetes Dashboard, vá na aba de nós para visualiza-los.
 ![](img/ui_nodes.png)
-2. Explore the different node properties available through the dashboard
-3. Explore the different pod properties available through the dashboard ![](img/ui_pods.png)
-4. In this lab feel free to take a look around other at  other resources Kubernetes provides through the dashboard
+2. Explore as diferentes propriedades e métricas dos nós disponiveis através da dashboard.
+3. Explore as diferentes propriedades expostas pelo menu de pods.
+![](img/ui_pods.png)
+4. Explore os serviços e suas propriedes.
+5. Veja o secret que foi deployado.
+5. Neste laboratório, fique livre para explorar outros conceitos de Kubernetes que foram abordados anteriormente, disponíveis através da dashboard do Kubernetes.
 
-> To learn more about Kubernetes objects and resources, browse the documentation: <https://kubernetes.io/docs/user-journeys/users/application-developer/foundational/#section-3>
+> Para aprender mais sobre os objetos e modelos do Kubernetes, não há melhor lugar para visitar do que a documentação oficial:
+> * https://kubernetes.io/docs/concepts/
+> * <https://kubernetes.io/docs/user-journeys/users/application-developer/foundational/#section-3>

@@ -1,4 +1,4 @@
-# Deploy do Aplicativo de Super-Heróies para o AKS
+# Deploy da Aplicação de Super-Heróis para o AKS
 
 ## Revisar/Editar os arquivos de configuração YAML
 
