@@ -27,7 +27,7 @@ Esses laboratórios geralmente são entregues pelo **Azure Global Blackbelt Team
 ```bash
 $ wget https://raw.githubusercontent.com/CSELATAM/global-devops-bootcamp/master/resources/deploy-lab.sh
 $ chmod +x deploy-lab.sh
-$ ./deploy-lab.sh VHDURL
+$ ./deploy-lab.sh
 ```
 
 Após rodar o script acima, você deverá obter como saída o seguinte log:
