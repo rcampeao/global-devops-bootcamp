@@ -193,7 +193,7 @@ Agora que nós temos as imagens dos containers para os componentes da nossa apli
 ### Criar instância do Azure Container Registry
 
 1. No seu browser, logue-se no portal do Azure em https://portal.azure.com.
-2. Clique em "Create a resource" (Criar um recurso) e selecione "Azure Container Registry"
+2. Clique em "Create a resource" (Criar um recurso) e selecione "Container Registry"
 3. Dê um nome para o seu registry (ele deve ser único)
 4. Use o Resource Group existente
 5. Habilite o Admin user
