@@ -190,22 +190,22 @@ Nos nossos labs passados, nós tivemos que criar um `Dockerfile` para o web app.
 
     Você usará essa URL no seu próximo passo.
 
-2. In your forked Github repo, click on Settings
-3. Click Webhooks
-4. Click `Add webhook`
-5. Set the `Payload URL` to the URL created in step 1
-6. Set the `Content type` to `application/json`
-7. Set the `Secret` to the value from your `brig-proj-heroes.yaml` called "sharedSecret"
-8. Set the `Which events...` to `Let me select individual events` and check `Push` and `Pull request`
+2. No seu fork do repositório no Github, clique em `Settings`
+3. Clique em `Webhooks`
+4. Clique `Add webhook`
+5. Coloque no `Payload URL` a URL criada no passo 1
+6. Coloque o `Content type` como `application/json`
+7. Coloque no `Secret` o valor da senha que você colocou no `brig-proj-heroes.yaml` (chamada "sharedSecret")
+8. Configure os `Which events...` para `Let me select individual events` e marque `Push` e `Pull request`
 
     ![Github webhook](img/github-webhook.png "Github webhook")
 
-9. Click the `Add webhook` button
+9. Clique no botão `Add webhook`
 
-## Test the CI/CD Pipeline
+## Teste o Pipeline de CI/CD
 
-1. Update the web application. Directly in your forked Github repo, edit the `Footer.vue` file. Stored in: `global-devops-bootcamp/app/web/src/components/`
-2. Find the snippet below *(line 13)* and change the text _"Azure Global Blackbelt Team"_ to your name or whatever you would like to display.
+1. Atualize a aplicação web. Diretamente em seu repositório forkado, pela própria interface web, edite o arquivo `Footer.vue`, o qual está em: `global-devops-bootcamp/app/web/src/components/`
+2. Procure o trecho abaixo *(linha 13)* e mude o texto *"Azure Global Blackbelt Team"* para o seu nome ou qualquer outra coisa que você queira mostrar.
 
     ```
     <div class="row at-row flex-center flex-middle">
@@ -219,9 +219,9 @@ Nos nossos labs passados, nós tivemos que criar um `Dockerfile` para o web app.
     </div>
     ```
 
-3. Click `Commit changes` in Github. Provide a commit message if you would like.
-4. List the pods in the cluster (`kubectl get pods`). You should see Brigade worker and jobs running.
-5. If this completes successfully, you will see your updated web app (acesse a URL pública do seu serviço web)
+3. Clique em `Commit changes` no Github. Coloque uma mensagem de commit se você desejar.
+4. Liste os pods no seu cluster (`kubectl get pods`). Você deverá ver o worker do Brigade e os jobs dele rodando.
+5. Se você completou tudo com sucesso, você deverá ver a sua aplicação atualizada!  (acesse a URL pública do seu serviço web)
 
 > Nota: Estude os logs dos pods e entende mais profundamente o funcionamento do framework.
 > ![Brigade Pods](img/brigade-pods.png)
