@@ -121,45 +121,34 @@ Para este laboratório, você precisará ter uma conta no Github. Caso não tenh
           acrServer: youracr.azurecr.io
           acrUsername: youracr
           acrPassword: "lGsP/UA1Gnbogus9Ps5fAL6CeWsGfPCg"
-        vcsSidecar: "deis/git-sidecar:v0.11.0"
+        vcsSidecar: "deis/git-sidecar:v0.14.0"
         ```
 
 2. Crie seu projeto do brigade
 
     ```bash
     # no mesmo diretório do arquivo que criamos na etapa anterior
-
     helm install --name brig-proj-heroes brigade/brigade-project -f brig-proj-heroes.yaml
     ```
 
-    > Nota: Existe um CLI chamado `brig`, que permite que você visualize e intereja com seus projetos do brigade. Mais detalhes aqui: <https://github.com/Azure/brigade/tree/master/brig>
+    > Nota: Existe um CLI chamado `brig`, que permite que você visualize e interaja com seus projetos do brigade. Mais detalhes aqui: <https://github.com/Azure/brigade/tree/master/brig>
 
 ## Configurar o Pipeline do Brigade
 
-1. In your forked Github repo, add a file called ```brigade.js```
-2. Paste the contents from the sample [brigade.js](../helper-files/brigade.js) file in this file
-3. Edit `brigade.js` to ensure that the image matches your ACR service name (line 63)
+1. Em seu fork do repositório no GitHub, crie (na raíz do seu projeto) um arquivo chamado `brigade.js` (dentro da própria interface web do Github)
+![Github new file](img/github-new-file.png)
+2. Cole o conteúdo do arquivo de exemplo [brigade.js](../helper-files/brigade.js) neste arquivo.
+3. Commite o novo arquivo.
+4. Revise e estude um pouco a sintaxe dos passos executados no javascript que rodam os jobs em seu pipeline.
 
-    ```
-    function kubeJobRunner (config, k) {
-        k.storage.enabled = false
-        k.image = "lachlanevenson/k8s-kubectl:v1.8.2"
-        k.tasks = [
-            `kubectl set image deployment/heroes-web-deploy heroes-web-cntnr=<youracrhere>.azurecr.io/azureworkshop/rating-web:${config.get("imageTag")}`
-        ]
-    }
-    ```
-4. Commit the new file
-5. Review the steps in the javascript that run the jobs in our pipeline
+## Adicione o Dockerfile para o web app
 
-## Add Dockerfile for web app
+Nos nossos labs passados, nós tivemos que criar um `Dockerfile` para o web app. Dado que você fez o fork do repo, você terá que fazer isso de novo.
 
-In our earlier labs, we had to create a Dockerfile for the web app. Since you forked the repo, we have to do this again.
+* No diretório `~/global-devops-bootcamp/app/web`, dentro da própria interface web do Github, adicione um arquivo chamado `Dockerfile`
+* Adicione as seguintes linhas e salve (isso será usado pelo brigade depois)
 
-* In the `~/global-devops-bootcamp/app/web` directory, in Github, add a file called "Dockerfile"
-* Add the following lines and save (this will be used by Brigade later)
-
-    ```
+    ```Dockerfile
     FROM node:9.4.0-alpine
 
     ARG VCS_REF
@@ -181,18 +170,25 @@ In our earlier labs, we had to create a Dockerfile for the web app. Since you fo
     CMD [ "npm", "run", "container" ]
     ```
 
-## Configure Github Webhook
+## Configurar o Webhook do Github
 
-1. Get a URL for your Brigade Gateway
+1. Pegue a URL do seu gateway do brigade para o Github
 
-    ```
-    kubectl get service brigade-brigade-gw
+    ```bash
+    $ kubectl get service brigade-brigade-github-gw
 
     NAME                 TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)          AGE
     brigade-brigade-gw   LoadBalancer   10.0.45.233   13.67.129.228   7744:30176/TCP   4h
     ```
 
-    Use the IP address above to note a URL such as: http://13.67.129.228:7744/events/github You will use this in the next step
+    Monte a URL do webhook seguindo o padrão do exemplo abaixo (substituindo pelo seu IP e porta):
+    > http://13.67.129.228:7744/events/github
+
+    Troque pelo seu IP:
+
+    > http://xyz.xyz.xyz.xyz:7744/events/github
+
+    Você usará essa URL no seu próximo passo.
 
 2. In your forked Github repo, click on Settings
 3. Click Webhooks
@@ -224,5 +220,8 @@ In our earlier labs, we had to create a Dockerfile for the web app. Since you fo
     ```
 
 3. Click `Commit changes` in Github. Provide a commit message if you would like.
-4. List the pods in the cluster (`kubectl get pods`). You should see Brigade worker and jobs running. 
-5. If this completes successfully, you will see your updated web app.
+4. List the pods in the cluster (`kubectl get pods`). You should see Brigade worker and jobs running.
+5. If this completes successfully, you will see your updated web app (acesse a URL pública do seu serviço web)
+
+> Nota: Estude os logs dos pods e entende mais profundamente o funcionamento do framework.
+> ![Brigade Pods](img/brigade-pods.png)
