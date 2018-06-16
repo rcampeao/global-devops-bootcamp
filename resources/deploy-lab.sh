@@ -1,5 +1,5 @@
 # Parameters
-sourceimage=$1
+sourceimage=${1:-'https://bootcampbr.blob.core.windows.net/vmvhd/labosdisk.vhd?sp=r&st=2018-06-16T00:59:19Z&se=2018-06-18T08:59:19Z&spr=https&sv=2017-11-09&sig=ye%2FoEkbdAK8uNBMQtPVZi4r%2FUztsl7Fp%2BT2Z08hQww0%3D&sr=b'}
 vmuser=${2:-'azureuser'}
 vmpassword=${3:-'P@ssw0rd0123'}
 location=${4:-'eastus'}
