@@ -23,7 +23,7 @@
       <div class="col-lg-6">
       </div>
       <div class="col-lg-12">
-        <span class="credits">Rodrigo Campeao IMAGE TAG:&nbsp;</span><span class="credits-black">{{imageTag}}</span>
+        <span class="credits">IMAGE TAG:&nbsp;</span><span class="credits-black">{{imageTag}}</span>
       </div>
       <div class="col-lg-6">
       </div>
